@@ -1,12 +1,13 @@
 package event;
 
-import java.util.Date;
 import java.util.Set;
 
 public class Event {
     private String name;
-    private Date date;
+    private String date;
     private String id;
+    private String description;
+    private String location;
     private Set<String> subscribers;
 
 
@@ -33,7 +34,7 @@ public class Event {
      *
      * @return date
      */
-    public Date getDate() {
+    public String getDate() {
         return this.date;
     }
 
@@ -42,7 +43,7 @@ public class Event {
      *
      * @param date
      */
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -62,6 +63,22 @@ public class Event {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
+
+    public String getDescription(){
+        return this.description;
+    }
+
+    public void setLocation(String location){
+        this.location = location;
+    }
+
+    public String getLocation(){
+        return this.location;
     }
 
     /**
