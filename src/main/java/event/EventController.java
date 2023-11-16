@@ -4,6 +4,8 @@ import chord.ChordController;
 import chord.ChordNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/events")
@@ -12,9 +14,16 @@ public class EventController {
     @Autowired
     private ChordController chordController;
 
-    @PostMapping("/{nodeId}")
-    public void addEvent(@PathVariable String nodeId, @RequestBody Event event) {
-        chordController.storeEventAtNode(nodeId, event);
+    List<Event> eventList = new ArrayList<>();
+
+    @GetMapping("/events")
+    public List<Event> getAllEvents() {
+        return eventList;
+    }
+
+    @PostMapping("/events")
+    public void addEvent(@RequestBody Event event) {
+        chordController.storeEventAtNode(event);
     }
 
     @GetMapping("/{eventId}")

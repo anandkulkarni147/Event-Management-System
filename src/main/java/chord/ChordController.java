@@ -10,8 +10,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/nodes")
 public class ChordController {
-    private TreeMap<Long, ChordNode> nodes = new TreeMap<>();
-    List<Event> eventList = new ArrayList<>();
+    private final TreeMap<Long, ChordNode> nodes = new TreeMap<>();
 
     /**
      * get field
@@ -39,11 +38,6 @@ public class ChordController {
         nodes.remove(nodeId);
     }
 
-    @GetMapping("/events")
-    public List<Event> getEvents() {
-        return eventList;
-    }
-
     @PostMapping("/events")
     public void storeEventAtNode(@RequestBody Event event) {
         Long nodeId = hashKey(event.getId());
@@ -55,7 +49,6 @@ public class ChordController {
             node = nodes.get(nodes.firstKey());
         }
         node.storeEvent(event);
-        eventList.add(event);
     }
 
     private void redistributeKeys(ChordNode departingNode) {
@@ -64,10 +57,6 @@ public class ChordController {
                 node.transferKeys(departingNode);
             }
         }
-    }
-
-    private String generateNodeId() {
-        return UUID.randomUUID().toString();
     }
 
     private Long hashKey(String key) {
