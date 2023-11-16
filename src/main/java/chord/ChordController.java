@@ -1,73 +1,69 @@
 package chord;
 
+import event.Event;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/nodes")
 public class ChordController {
-    private List<ChordNode> nodes = new ArrayList<>();
+    private TreeMap<String, ChordNode> nodes = new TreeMap<>();
+
+    /**
+     * get field
+     *
+     * @return nodes
+     */
+    public TreeMap<String, ChordNode> getNodes() {
+        return this.nodes;
+    }
 
     @PostMapping
     public void addNode() {
         ChordNode newNode = new ChordNode(generateNodeId());
-        nodes.add(newNode);
-        nodes.sort(Comparator.comparing(ChordNode::getNodeId));
+        nodes.put(newNode.getNodeId(), newNode);
     }
 
     @GetMapping("/{key}")
     public String findSuccessor(@PathVariable String key) {
         int keyHash = hashKey(key);
-        ChordNode successor = findSuccessorNode(keyHash);
-        return successor.getNodeId();
+        Map.Entry<String, ChordNode> entry = nodes.ceilingEntry(key);
+        return entry != null ? entry.getKey() : null;
     }
 
     @DeleteMapping("/{nodeId}")
     public void removeNode(@PathVariable String nodeId) {
-        ChordNode nodeToRemove = findNodeById(nodeId);
-        if (nodeToRemove != null) {
-            nodes.remove(nodeToRemove);
-            redistributeKeys(nodeToRemove);
-        }
+        redistributeKeys(nodes.get(nodeId));
+        nodes.remove(nodeId);
     }
 
-    private ChordNode findNodeById(String nodeId) {
-        return nodes.stream()
-                .filter(node -> node.getNodeId().equals(nodeId))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private ChordNode findSuccessorNode(int keyHash) {
-        for (ChordNode node : nodes) {
-            if (node.getNodeIdHash() >= keyHash) {
-                return node;
-            }
+    @PostMapping("/{nodeId}/events")
+    public void storeEventAtNode(@PathVariable String nodeId, @RequestBody Event event) {
+        ChordNode node = nodes.get(nodeId);
+        if (node != null) {
+            node.storeEvent(event);
         }
-        // If no successor found, return the first node (wrap around)
-        return nodes.get(0);
     }
 
     private void redistributeKeys(ChordNode departingNode) {
-        for (ChordNode node : nodes) {
+        for (ChordNode node : nodes.values()) {
             if (!node.equals(departingNode)) {
                 node.transferKeys(departingNode);
             }
         }
     }
 
-    private static String generateNodeId() {
+    private String generateNodeId() {
         return UUID.randomUUID().toString();
     }
 
-    private static int hashKey(String key) {
+    private int hashKey(String key) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] keyBytes = md.digest(key.getBytes());
@@ -76,4 +72,5 @@ public class ChordController {
             throw new RuntimeException("Error hashing key");
         }
     }
+
 }

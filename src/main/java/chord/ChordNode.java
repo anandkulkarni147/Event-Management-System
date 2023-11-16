@@ -1,6 +1,7 @@
 
 package chord;
 
+import event.Event;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -10,6 +11,8 @@ public class ChordNode {
     private String nodeId;
     private int nodeIdHash;
     private List<String> keys = new ArrayList<>();
+
+    private Map<String, Event> events = new HashMap<>();
 
     public ChordNode(String nodeId) {
         this.nodeId = nodeId;
@@ -22,6 +25,14 @@ public class ChordNode {
 
     public int getNodeIdHash() {
         return nodeIdHash;
+    }
+
+    public void storeEvent(Event event) {
+        events.put(event.getId(), event);
+    }
+
+    public Event getEvent(String eventId) {
+        return events.get(eventId);
     }
 
     public void transferKeys(ChordNode newPredecessor) {
