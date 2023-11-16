@@ -14,6 +14,8 @@ public class Event {
 
     private String venue;
 
+    private String description;
+    private String location;
     private Set<String> subscribers;
 
     public Event(String name, Date date, String details, String venue) {
@@ -53,15 +55,6 @@ public class Event {
     }
 
     /**
-     * set field
-     *
-     * @param date
-     */
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    /**
      * get field
      *
      * @return id
@@ -77,6 +70,22 @@ public class Event {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
+
+    public String getDescription(){
+        return this.description;
+    }
+
+    public void setLocation(String location){
+        this.location = location;
+    }
+
+    public String getLocation(){
+        return this.location;
     }
 
     /**

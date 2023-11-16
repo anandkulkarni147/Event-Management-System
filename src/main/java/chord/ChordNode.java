@@ -8,23 +8,17 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class ChordNode {
-    private String nodeId;
-    private int nodeIdHash;
-    private List<String> keys = new ArrayList<>();
+    private Long nodeId;
+    private List<Long> keys = new ArrayList<>();
 
     private Map<String, Event> events = new HashMap<>();
 
-    public ChordNode(String nodeId) {
+    public ChordNode(Long nodeId) {
         this.nodeId = nodeId;
-        this.nodeIdHash = hashNodeId(nodeId);
     }
 
-    public String getNodeId() {
+    public Long getNodeId() {
         return nodeId;
-    }
-
-    public int getNodeIdHash() {
-        return nodeIdHash;
     }
 
     public void storeEvent(Event event) {
@@ -36,10 +30,9 @@ public class ChordNode {
     }
 
     public void transferKeys(ChordNode newPredecessor) {
-        List<String> keysToTransfer = new ArrayList<>();
-        for (String key : keys) {
-            int keyHash = hashKey(key);
-            if (newPredecessor.getNodeIdHash() < keyHash && keyHash <= nodeIdHash) {
+        List<Long> keysToTransfer = new ArrayList<>();
+        for (Long key : keys) {
+            if (newPredecessor.getNodeId() < key && key <= nodeId) {
                 keysToTransfer.add(key);
             }
         }
@@ -47,26 +40,16 @@ public class ChordNode {
         keys.removeAll(keysToTransfer);
     }
 
-    public void addKeys(List<String> keysToAdd) {
+    public void addKeys(List<Long> keysToAdd) {
         keys.addAll(keysToAdd);
-        keys.sort(String::compareTo);
+        keys.sort(Long::compareTo);
     }
 
-    private static int hashNodeId(String nodeId) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            byte[] nodeIdBytes = md.digest(nodeId.getBytes());
-            return ByteBuffer.wrap(nodeIdBytes).getInt();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error hashing node ID");
-        }
-    }
-
-    private static int hashKey(String key) {
+    private static Long hashKey(String key) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] keyBytes = md.digest(key.getBytes());
-            return ByteBuffer.wrap(keyBytes).getInt();
+            return ByteBuffer.wrap(keyBytes).getLong();
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error hashing key");
         }
