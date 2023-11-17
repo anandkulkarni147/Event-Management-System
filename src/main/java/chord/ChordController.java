@@ -24,8 +24,13 @@ public class ChordController {
     }
 
     private Long findSuccessor(Long key) {
-        Map.Entry<Long, ChordNode> entry = nodes.ceilingEntry(key);
-        return entry != null ? entry.getKey() : nodes.firstKey();
+        Long successorId = nodes.ceilingKey(key);
+        return successorId != null ? successorId : nodes.firstKey();
+    }
+
+    private Long findPredecessor(Long key) {
+        Long predecessorId = nodes.floorKey(key);
+        return predecessorId != null ? predecessorId : nodes.lastKey();
     }
 
     public void initNodes() {
@@ -33,7 +38,6 @@ public class ChordController {
         nodes.put(newNode.getNodeId(), newNode);
         newNode = new ChordNode(Long.MAX_VALUE);
         nodes.put(newNode.getNodeId(), newNode);
-        //Add logic to redistribute the keys.
     }
 
     public void removeNode(Long nodeId) {
@@ -65,6 +69,14 @@ public class ChordController {
                 next.getEvents().remove(eventEntry.getKey());
             }
         }
+    }
+
+    public FingerTable getFingerTable(@PathVariable String nodeId) {
+        ChordNode node = nodes.get(nodeId);
+        if (node != null) {
+            return node.getFingerTable();
+        }
+        return null;
     }
 
     private void redistributeKeys(ChordNode departingNode) {

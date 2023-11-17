@@ -9,12 +9,20 @@ import java.util.*;
 
 public class ChordNode {
     private Long nodeId;
+
+    private FingerTable fingerTable;
     private List<Long> keys = new ArrayList<>();
 
     private Map<String, Event> events = new HashMap<>();
 
     public ChordNode(Long nodeId) {
+
         this.nodeId = nodeId;
+        this.fingerTable = new FingerTable(this);
+    }
+
+    public ChordNode getSuccessor() {
+        return fingerTable.get(0);
     }
 
     public Long getNodeId() {
@@ -76,5 +84,14 @@ public class ChordNode {
      */
     public Map<String, Event> getEvents() {
         return this.events;
+    }
+
+    /**
+     * get field
+     *
+     * @return fingerTable
+     */
+    public FingerTable getFingerTable() {
+        return this.fingerTable;
     }
 }
