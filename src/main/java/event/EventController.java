@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/events")
 public class EventController {
 
     @Autowired
@@ -17,18 +16,15 @@ public class EventController {
 
     List<Event> eventList = new ArrayList<>();
 
-    @GetMapping("/events")
     public List<Event> getAllEvents() {
         return eventList;
     }
 
-    @PostMapping("/events")
-    public void addEvent(@RequestBody Event event) {
+    public void addEvent(Event event) {
         chordController.storeEventAtNode(event);
     }
 
-    @GetMapping("/{eventId}")
-    public Event getEvent(@PathVariable String eventId) {
+    public Event getEvent(String eventId) {
         for (ChordNode node : chordController.getNodes().values()) {
             Event event = node.getEvent(eventId);
             if (event != null) {
