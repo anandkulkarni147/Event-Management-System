@@ -3,6 +3,7 @@ package event;
 import chord.ChordController;
 import chord.ChordNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,23 @@ public class EventController {
             }
         }
         return null;
+    }
+
+    @GetMapping("/home")
+    public String home(Model model){
+        model.addAttribute("event", new Event());
+        return "home";
+    }
+
+    @PostMapping("/home")
+    public String createNewEvent(@ModelAttribute Event event, Model model){
+        //Handle event data; store to chord
+        System.out.println(event.getName());
+
+        //Reset model attribute
+        model.addAttribute("event", new Event());
+        model.addAttribute("message", "Your event has been successfully posted!");
+        return "home";
     }
 
 }

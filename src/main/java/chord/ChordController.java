@@ -33,9 +33,10 @@ public class ChordController {
         nodes.put(newNode.getNodeId(), newNode);
         newNode = new ChordNode(Long.MAX_VALUE);
         nodes.put(newNode.getNodeId(), newNode);
+        //Add logic to redistribute the keys.
     }
 
-    public void removeNode(String nodeId) {
+    public void removeNode(Long nodeId) {
         redistributeKeys(nodes.get(nodeId));
         nodes.remove(nodeId);
     }
