@@ -21,8 +21,22 @@ public class ChordNode {
         return nodeId;
     }
 
+    /**
+     * store event
+     *
+     * @param event event
+     */
     public void storeEvent(Event event) {
         events.put(event.getId(), event);
+    }
+
+    /**
+     * get field
+     *
+     * @return number of events in a node
+     */
+    public int getNumberOfEventsInCurrentNode() {
+        return this.events.size();
     }
 
     public Event getEvent(String eventId) {
@@ -53,5 +67,14 @@ public class ChordNode {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error hashing key");
         }
+    }
+
+    /**
+     * get field
+     *
+     * @return events
+     */
+    public Map<String, Event> getEvents() {
+        return this.events;
     }
 }

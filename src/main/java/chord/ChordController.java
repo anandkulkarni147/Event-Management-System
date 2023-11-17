@@ -2,15 +2,17 @@ package chord;
 
 import event.Event;
 import org.springframework.web.bind.annotation.*;
+
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @RestController
-@RequestMapping("/nodes")
 public class ChordController {
     private final TreeMap<Long, ChordNode> nodes = new TreeMap<>();
+
+    private final int MAX_EVENTS_IN_SINGLE_NODE = 100;
 
     /**
      * get field
@@ -21,34 +23,47 @@ public class ChordController {
         return this.nodes;
     }
 
-    @GetMapping("/{key}")
-    public Long findSuccessor(@PathVariable Long key) {
+    private Long findSuccessor(Long key) {
         Map.Entry<Long, ChordNode> entry = nodes.ceilingEntry(key);
-        return entry != null ? entry.getKey() : null;
+        return entry != null ? entry.getKey() : nodes.firstKey();
     }
 
-    public void addNewNode(Event event) {
-        ChordNode newNode = new ChordNode(hashKey(event.getId()));
+    public void initNodes() {
+        ChordNode newNode = new ChordNode(1L);
+        nodes.put(newNode.getNodeId(), newNode);
+        newNode = new ChordNode(Long.MAX_VALUE);
         nodes.put(newNode.getNodeId(), newNode);
     }
 
-    @DeleteMapping("/{nodeId}")
-    public void removeNode(@PathVariable String nodeId) {
+    public void removeNode(String nodeId) {
         redistributeKeys(nodes.get(nodeId));
         nodes.remove(nodeId);
     }
 
-    @PostMapping("/events")
-    public void storeEventAtNode(@RequestBody Event event) {
+    public void storeEventAtNode(Event event) {
         Long nodeId = hashKey(event.getId());
-        Long nodePosition = nodes.ceilingKey(nodeId);
-        ChordNode node = null;
-        if (nodePosition != null) {
-            node = nodes.get(nodePosition);
-        } else {
-            node = nodes.get(nodes.firstKey());
-        }
+        Long successorId = findSuccessor(nodeId);
+        ChordNode node = nodes.get(successorId);
         node.storeEvent(event);
+        if (node.getNumberOfEventsInCurrentNode() > MAX_EVENTS_IN_SINGLE_NODE) {
+            addNewNodeAndBalanceKeys(node);
+        }
+    }
+
+    private void addNewNodeAndBalanceKeys(ChordNode node) {
+        Long prevId = nodes.lowerKey(node.getNodeId()) != null ? nodes.lowerKey(node.getNodeId()) : node.getNodeId();
+        Long nextId = nodes.higherKey(node.getNodeId()) != null ? nodes.higherKey(node.getNodeId()) : node.getNodeId();
+        Long newNodeId = prevId + (nextId - prevId) / 2;
+        ChordNode newNode = new ChordNode(newNodeId);
+        nodes.put(newNodeId, newNode);
+
+        ChordNode next = nodes.get(nextId);
+        for (Map.Entry<String, Event> eventEntry : next.getEvents().entrySet()) {
+            if (hashKey(eventEntry.getKey()) <= newNodeId) {
+                newNode.getEvents().put(eventEntry.getKey(), eventEntry.getValue());
+                next.getEvents().remove(eventEntry.getKey());
+            }
+        }
     }
 
     private void redistributeKeys(ChordNode departingNode) {
