@@ -30,10 +30,11 @@ public class ChordController {
     public void addNewNode(Event event) {
         ChordNode newNode = new ChordNode(hashKey(event.getId()));
         nodes.put(newNode.getNodeId(), newNode);
+        //Add logic to redistribute the keys.
     }
 
     @DeleteMapping("/{nodeId}")
-    public void removeNode(@PathVariable String nodeId) {
+    public void removeNode(@PathVariable Long nodeId) {
         redistributeKeys(nodes.get(nodeId));
         nodes.remove(nodeId);
     }

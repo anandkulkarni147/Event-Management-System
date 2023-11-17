@@ -18,6 +18,14 @@ public class Event {
     private String location;
     private Set<String> subscribers;
 
+    public Event(){
+        this.name = "";
+        this.date = new Date();
+        this.id = "";
+        this.details = "";
+        this.venue = "";
+        this.subscribers = new HashSet<>();
+    }
     public Event(String name, Date date, String details, String venue) {
         this.name = name;
         this.date = date;
