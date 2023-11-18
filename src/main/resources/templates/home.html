@@ -13,14 +13,13 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            height: 100vh;
         }
 
         h1 {
             text-align: center;
         }
 
-        form {
+        .newEventForm {
             width: 300px;
             background-color: #fff;
             padding: 20px;
@@ -62,14 +61,46 @@
             background-color: #45a049;
         }
 
-        .additional-content {
-            margin-top: 20px;
+        .event-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+            position: relative;
+            background-color: #fff;
+        }
+
+        .event-card h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .event-card p {
+            margin: 5px 0;
+        }
+
+        .subscribe-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .subscribe-button:hover {
+            background-color: #2980b9;
         }
     </style>
 </head>
 <body>
     <h1>Create New Event</h1>
-    <form action="#" th:action="@{/home}" th:object="${event}" method="post">
+    <form action="#" th:action="@{/createNewEvent}" th:object="${event}" method="post" class="newEventForm">
         <div th:if="${message}" class="message">
             <p th:text="${message}"></p>
         </div>
@@ -84,7 +115,21 @@
     
     <div class="additional-content">
         <h1>Current Events</h1>
-        <p>------------------------------------------DISPLAY LIST OF EVENTS HERE------------------------------------------</p>
+        <!-- <p>------------------------------------------DISPLAY LIST OF EVENTS HERE------------------------------------------</p> -->
+        <div th:if="${subscriptionMessage}" class="message">
+            <p th:text="${subscriptionMessage}"></p>
+        </div>
+        <div th:each="event : ${eventList}" class="event-card">
+            <form action="#" th:action="@{/subscribe}" method="post">
+                <input type="text" name="eventName" th:value="${event.name}" hidden/>
+                <input type="text" name="eventId" th:value="${event.id}" hidden/>
+                <h2 th:text="${event.name}"></h2>
+                <p th:text="${event.date}"></p><br/>
+                <p th:text="${event.venue}"></p><br/>
+                <p th:text="${event.details}"></p><br/>
+                <button class="subscribe-button">Subscribe</button>
+            </form>
+        </div> 
     </div>
 </body>
 </html>
