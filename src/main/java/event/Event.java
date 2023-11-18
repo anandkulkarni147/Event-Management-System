@@ -9,16 +9,13 @@ public class Event {
     private String name;
     private Date date;
     private String id;
-
     private String details;
-
     private String venue;
-
     private String description;
     private String location;
     private Set<String> subscribers;
 
-    public Event(){
+    public Event() {
         this.name = "";
         this.date = new Date();
         this.id = "";
@@ -26,6 +23,7 @@ public class Event {
         this.venue = "";
         this.subscribers = new HashSet<>();
     }
+
     public Event(String name, Date date, String details, String venue) {
         this.name = name;
         this.date = date;
@@ -80,19 +78,19 @@ public class Event {
         this.id = id;
     }
 
-    public void setDescription(String description){
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return this.description;
     }
 
-    public void setLocation(String location){
+    public void setLocation(String location) {
         this.location = location;
     }
 
-    public String getLocation(){
+    public String getLocation() {
         return this.location;
     }
 

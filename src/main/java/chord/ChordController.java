@@ -10,88 +10,93 @@ import java.util.*;
 
 @RestController
 public class ChordController {
-    private final TreeMap<Long, ChordNode> nodes = new TreeMap<>();
+    private final TreeMap<Long, ChordNode> ring = new TreeMap<>();
 
-    private final int MAX_EVENTS_IN_SINGLE_NODE = 100;
+    private static int MAX_EVENTS_IN_SINGLE_NODE = 2;
 
     /**
      * get field
      *
      * @return nodes
      */
-    public TreeMap<Long, ChordNode> getNodes() {
-        return this.nodes;
+    public TreeMap<Long, ChordNode> getRing() {
+        return this.ring;
     }
 
     private Long findSuccessor(Long key) {
-        Long successorId = nodes.ceilingKey(key);
-        return successorId != null ? successorId : nodes.firstKey();
+        Long successorId = ring.ceilingKey(key);
+        return successorId != null ? successorId : ring.firstKey();
     }
 
     private Long findPredecessor(Long key) {
-        Long predecessorId = nodes.floorKey(key);
-        return predecessorId != null ? predecessorId : nodes.lastKey();
+        Long predecessorId = ring.floorKey(key);
+        return predecessorId != null ? predecessorId : ring.lastKey();
     }
 
     public void initNodes() {
-        ChordNode newNode = new ChordNode(1L);
-        nodes.put(newNode.getNodeId(), newNode);
-        newNode = new ChordNode(Long.MAX_VALUE);
-        nodes.put(newNode.getNodeId(), newNode);
+        ChordNode first = new ChordNode((1 + Long.MAX_VALUE / 2) / 2);
+        ring.put(first.getNodeId(), first);
+        ChordNode second = new ChordNode(Long.MAX_VALUE / 2 + (Long.MAX_VALUE - Long.MAX_VALUE / 2) / 2);
+        ring.put(second.getNodeId(), second);
+        first.setSuccessor(second);
+        first.setPredecessor(second);
+        second.setPredecessor(first);
+        second.setSuccessor(first);
     }
 
     public void removeNode(Long nodeId) {
-        redistributeKeys(nodes.get(nodeId));
-        nodes.remove(nodeId);
+        ChordNode node = ring.get(nodeId);
+        ChordNode predecessor = node.getPredecessor();
+        ChordNode successor = node.getSuccessor();
+        successor.putAll(node);
+        predecessor.setSuccessor(successor);
+        successor.setPredecessor(predecessor);
+        ring.remove(nodeId);
+        node = null;
     }
 
     public void storeEventAtNode(Event event) {
-        Long nodeId = hashKey(event.getId());
-        Long successorId = findSuccessor(nodeId);
-        ChordNode node = nodes.get(successorId);
+        Long nodeHash = hashKey(event.getId());
+        Long successorId = findSuccessor(nodeHash);
+        ChordNode node = ring.get(successorId);
         node.storeEvent(event);
         if (node.getNumberOfEventsInCurrentNode() > MAX_EVENTS_IN_SINGLE_NODE) {
-            addNewNodeAndBalanceKeys(node);
+            addNewNode(node);
         }
     }
 
-    private void addNewNodeAndBalanceKeys(ChordNode node) {
-        Long prevId = nodes.lowerKey(node.getNodeId()) != null ? nodes.lowerKey(node.getNodeId()) : node.getNodeId();
-        Long nextId = nodes.higherKey(node.getNodeId()) != null ? nodes.higherKey(node.getNodeId()) : node.getNodeId();
-        Long newNodeId = prevId + (nextId - prevId) / 2;
+    private void addNewNode(ChordNode node) {
+        ChordNode predecessor = node.getPredecessor();
+        Long newNodeId = eventualConsistentHash(node.getNodeId(), predecessor.getNodeId());
         ChordNode newNode = new ChordNode(newNodeId);
-        nodes.put(newNodeId, newNode);
+        newNode.setSuccessor(node);
+        newNode.setPredecessor(predecessor);
+        node.setPredecessor(newNode);
+        predecessor.setSuccessor(newNode);
+        ring.put(newNodeId, newNode);
+        balanceKeys(newNode, node);
+        MAX_EVENTS_IN_SINGLE_NODE *= 2;
+    }
 
-        ChordNode next = nodes.get(nextId);
-        for (Map.Entry<String, Event> eventEntry : next.getEvents().entrySet()) {
-            if (hashKey(eventEntry.getKey()) <= newNodeId) {
+    private void balanceKeys(ChordNode newNode, ChordNode successor) {
+        for (Map.Entry<String, Event> eventEntry : new HashMap<>(successor.getEvents()).entrySet()) {
+            Long hashId = hashKey(eventEntry.getKey());
+            if (hashId <= newNode.getNodeId()) {
                 newNode.getEvents().put(eventEntry.getKey(), eventEntry.getValue());
-                next.getEvents().remove(eventEntry.getKey());
+                successor.getEvents().remove(eventEntry.getKey());
             }
         }
     }
 
-    public FingerTable getFingerTable(@PathVariable String nodeId) {
-        ChordNode node = nodes.get(nodeId);
-        if (node != null) {
-            return node.getFingerTable();
-        }
-        return null;
+    private Long eventualConsistentHash(Long curr, Long prev) {
+        return prev + (curr - prev) / 2;
     }
 
-    private void redistributeKeys(ChordNode departingNode) {
-        for (ChordNode node : nodes.values()) {
-            if (!node.equals(departingNode)) {
-                node.transferKeys(departingNode);
-            }
-        }
-    }
-
-    private Long hashKey(String key) {
+    public Long hashKey(String key) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] keyBytes = md.digest(key.getBytes());
-            return ByteBuffer.wrap(keyBytes).getLong();
+            return Math.abs(ByteBuffer.wrap(keyBytes).getLong());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error hashing key");
         }

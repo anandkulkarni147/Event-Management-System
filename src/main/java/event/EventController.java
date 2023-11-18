@@ -5,8 +5,10 @@ import chord.ChordNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 @RestController
 public class EventController {
@@ -25,23 +27,20 @@ public class EventController {
     }
 
     public Event getEvent(String eventId) {
-        for (ChordNode node : chordController.getNodes().values()) {
-            Event event = node.getEvent(eventId);
-            if (event != null) {
-                return event;
-            }
-        }
-        return null;
+        Long nodeId = chordController.hashKey(eventId);
+        TreeMap<Long, ChordNode> ring = chordController.getRing();
+        ChordNode node = ring.ceilingEntry(nodeId).getValue();
+        return node.getEvent(eventId);
     }
 
     @GetMapping("/home")
-    public String home(Model model){
+    public String home(Model model) {
         model.addAttribute("event", new Event());
         return "home";
     }
 
     @PostMapping("/home")
-    public String createNewEvent(@ModelAttribute Event event, Model model){
+    public String createNewEvent(@ModelAttribute Event event, Model model) {
         //Handle event data; store to chord
         System.out.println(event.getName());
 
