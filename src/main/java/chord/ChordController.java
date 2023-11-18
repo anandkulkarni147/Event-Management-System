@@ -1,6 +1,8 @@
 package chord;
 
 import event.Event;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 
 import java.nio.ByteBuffer;
@@ -33,6 +35,7 @@ public class ChordController {
         return predecessorId != null ? predecessorId : ring.lastKey();
     }
 
+    @EventListener(ApplicationReadyEvent.class)
     public void initNodes() {
         ChordNode first = new ChordNode((1 + Long.MAX_VALUE / 2) / 2);
         ring.put(first.getNodeId(), first);
