@@ -1,14 +1,14 @@
 package chord;
 
 import event.Event;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-@RestController
+@Controller
 public class ChordController {
     private final TreeMap<Long, ChordNode> ring = new TreeMap<>();
 
