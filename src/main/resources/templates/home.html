@@ -3,6 +3,7 @@
 <head> 
     <title>Home - Event Management System</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -104,7 +105,6 @@
         <div th:if="${message}" class="message">
             <p th:text="${message}"></p>
         </div>
-        <label for="id">Id:</label> <input type="text" th:field="*{id}" id="id" />
         <label for="name">Name:</label> <input type="text" th:field="*{name}" id="name" />
         <label for="date">Date:</label> <input type="text" th:field="*{date}" id="date" />
         <label for="location">Location:</label> <input type="text" th:field="*{location}" id="location" />
@@ -121,12 +121,11 @@
         </div>
         <div th:each="event : ${eventList}" class="event-card">
             <form action="#" th:action="@{/subscribe}" method="post">
-                <input type="text" name="eventName" th:value="${event.name}" hidden/>
                 <input type="text" name="eventId" th:value="${event.id}" hidden/>
                 <h2 th:text="${event.name}"></h2>
                 <p th:text="${event.date}"></p><br/>
-                <p th:text="${event.venue}"></p><br/>
-                <p th:text="${event.details}"></p><br/>
+                <i class="fa fa-map-marker" style="font-size:24px;color:red"></i>&nbsp<span th:text="${event.location}"></span><br/>
+                <p th:text="${event.description}"></p><br/>
                 <button class="subscribe-button">Subscribe</button>
             </form>
         </div> 

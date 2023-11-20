@@ -69,6 +69,13 @@ public class ChordNode {
      */
     public void storeEvent(Event event) {
         events.put(event.getId(), event);
+        System.out.println("\nNew event (ID-"+event.getId()+")\nStored at Node ID - "+this.getNodeId());
+        System.out.println("\n----------------------------List of events at current node - ["+this.getNodeId()+"]----------------------------");
+        Map<String, Event> eventsLocal = this.getEvents();
+        for(String eventId : eventsLocal.keySet()){
+            System.out.println("*"+eventsLocal.get(eventId).getName());
+        }
+        System.out.println("");
     }
 
     /**

@@ -9,8 +9,6 @@ public class Event {
     private String name;
     private Date date;
     private String id;
-    private String details;
-    private String venue;
     private String description;
     private String location;
     private Set<String> subscribers;
@@ -18,18 +16,18 @@ public class Event {
     public Event() {
         this.name = "";
         this.date = new Date();
-        this.id = "";
-        this.details = "";
-        this.venue = "";
+        this.id = generateEventId();
+        this.description = "";
+        this.location = "";
         this.subscribers = new HashSet<>();
     }
 
-    public Event(String name, Date date, String details, String venue) {
+    public Event(String name, Date date, String description, String location) {
         this.name = name;
         this.date = date;
         this.id = generateEventId();
-        this.details = details;
-        this.venue = venue;
+        this.description = description;
+        this.location = location;
         this.subscribers = new HashSet<>();
     }
 
@@ -107,40 +105,4 @@ public class Event {
         return UUID.randomUUID().toString();
     }
 
-
-    /**
-     * get field
-     *
-     * @return details
-     */
-    public String getDetails() {
-        return this.details;
-    }
-
-    /**
-     * set field
-     *
-     * @param details
-     */
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    /**
-     * get field
-     *
-     * @return venue
-     */
-    public String getVenue() {
-        return this.venue;
-    }
-
-    /**
-     * set field
-     *
-     * @param venue
-     */
-    public void setVenue(String venue) {
-        this.venue = venue;
-    }
 }

@@ -1,7 +1,6 @@
 package event;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -31,6 +30,7 @@ public class EventController {
     }
 
     public void addEvent(Event event) {
+        eventList.add(event);
         chordController.storeEventAtNode(event);
     }
 
@@ -55,16 +55,6 @@ public class EventController {
 
     @GetMapping("/home")
     public String home(HttpSession session, Model model) {
-        Event techSummit = new Event("Tech Summit 2023", new Date(), "A convergence of industry experts and innovators discussing the future of technology.", "Grand Convention Center");
-
-        Event musicFestival = new Event("Harmony Fest 2023", new Date(), "A three-day music extravaganza featuring artists from various genres.", "Green Meadows Amphitheater");
-
-        Event writingWorkshop = new Event("Creative Writing Workshop", new Date(), "A hands-on workshop focusing on developing storytelling skills.", "City Library Auditorium");
-
-        eventList.add(techSummit);
-        eventList.add(musicFestival);
-        eventList.add(writingWorkshop);
-
         String message = (String) session.getAttribute("message");
         if(message!=null){
             model.addAttribute("message", message);
@@ -75,7 +65,7 @@ public class EventController {
             model.addAttribute("subscriptionMessage", subscriptionMessage);
         }
 
-        model.addAttribute("eventList", eventList);
+        model.addAttribute("eventList", this.getAllEvents());
         model.addAttribute("event", new Event());
         return "home";
     }
@@ -86,13 +76,15 @@ public class EventController {
         String email = (String) session.getAttribute("email");
         System.out.println(email+" created a new event - "+event.getName());
 
+        this.addEvent(event);
+
         session.setAttribute("message", "Your event has been successfully posted!");
 
         return "redirect:/home";
     }
 
     @PostMapping("/subscribe")
-    public String subscribeToEvent(@RequestParam("eventName") String eventName, HttpSession session, Model model) {
+    public String subscribeToEvent(@RequestParam("eventName") String eventName, @RequestParam("eventId") String eventId, HttpSession session, Model model) {
         String email = (String) session.getAttribute("email");
         System.out.println(email+" subscribed to event - "+eventName);
         session.setAttribute("subscriptionMessage", "You are now subscribed to a new event - "+eventName);
