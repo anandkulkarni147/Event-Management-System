@@ -101,6 +101,11 @@ public class Event {
         return this.subscribers;
     }
 
+    public void addSubscriber(String subscriberEmail){
+        this.subscribers.add(subscriberEmail);
+        System.out.println("Subscribers for event ["+this.getId()+"] - \n"+subscribers);
+    }
+
     private String generateEventId() {
         return UUID.randomUUID().toString();
     }

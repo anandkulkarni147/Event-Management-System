@@ -81,6 +81,13 @@ public class ChordController {
         MAX_EVENTS_IN_SINGLE_NODE *= 2;
     }
 
+    public Event fetchEventObject(String eventId){
+        Long nodeHash = hashKey(eventId);
+        Long successorId = findSuccessor(nodeHash);
+        ChordNode node = ring.get(successorId);
+        return node.getEvent(eventId);
+    }
+
     private void balanceKeys(ChordNode newNode, ChordNode successor) {
         for (Map.Entry<String, Event> eventEntry : new HashMap<>(successor.getEvents()).entrySet()) {
             Long hashId = hashKey(eventEntry.getKey());

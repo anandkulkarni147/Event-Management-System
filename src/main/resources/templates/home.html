@@ -121,6 +121,7 @@
         </div>
         <div th:each="event : ${eventList}" class="event-card">
             <form action="#" th:action="@{/subscribe}" method="post">
+                <input type="text" name="eventName" th:value="${event.name}" hidden/>
                 <input type="text" name="eventId" th:value="${event.id}" hidden/>
                 <h2 th:text="${event.name}"></h2>
                 <p th:text="${event.date}"></p><br/>

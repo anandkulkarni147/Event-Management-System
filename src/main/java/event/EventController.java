@@ -87,6 +87,8 @@ public class EventController {
     public String subscribeToEvent(@RequestParam("eventName") String eventName, @RequestParam("eventId") String eventId, HttpSession session, Model model) {
         String email = (String) session.getAttribute("email");
         System.out.println(email+" subscribed to event - "+eventName);
+        Event event = chordController.fetchEventObject(eventId);
+        event.addSubscriber(email);        
         session.setAttribute("subscriptionMessage", "You are now subscribed to a new event - "+eventName);
         return "redirect:/home";
     }
