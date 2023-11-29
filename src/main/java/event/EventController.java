@@ -78,7 +78,7 @@ public class EventController {
 
         this.addEvent(event);
 
-        session.setAttribute("message", "Your event has been successfully posted!");
+        session.setAttribute("message", "New event - "+event.getName()+" - has been successfully posted!");
 
         return "redirect:/home";
     }
@@ -91,6 +91,19 @@ public class EventController {
         event.addSubscriber(email);        
         session.setAttribute("subscriptionMessage", "You are now subscribed to a new event - "+eventName);
         return "redirect:/home";
+    }
+
+    @GetMapping("/deleteNode")
+    public String delete(){
+        return "deleteNode";
+    }
+
+    @PostMapping("/deleteNode")
+    public String deleteNode(@RequestParam("nodeId") String nodeId, Model model){
+        Long id =  Long.parseLong(nodeId);
+        chordController.removeNode(id);
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!! "+id+" has been deleted !!!!!!!!!!!!!!!!!!!!!!!!!");
+        return "redirect:/deleteNode";
     }
 
 }

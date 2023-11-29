@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head> 
+    <title>Event Management System</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            width: 300px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        label {
+            display: block;
+            width: 100px; /* Set label width */
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="submit"] {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Delete Node[For demo purposes]</h1>
+    <form action="#" th:action="@{/deleteNode}" method="post">
+        <label for="nodeId">Node ID:</label> <input id="nodeId" name="nodeId" type="text" />
+        <input type="submit" value="Delete" /> 
+    </form>
+</body>
+</html>

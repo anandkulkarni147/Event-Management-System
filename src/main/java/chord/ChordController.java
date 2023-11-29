@@ -62,9 +62,16 @@ public class ChordController {
         Long nodeHash = hashKey(event.getId());
         Long successorId = findSuccessor(nodeHash);
         ChordNode node = ring.get(successorId);
+        int replicaCount = 2;
         node.storeEvent(event);
         if (node.getNumberOfEventsInCurrentNode() > MAX_EVENTS_IN_SINGLE_NODE) {
             addNewNode(node);
+        }
+        ChordNode currentNode = node;
+        for(int i=0; i<replicaCount; i++){
+            ChordNode successor = currentNode.getSuccessor();
+            successor.storeEvent(event);
+            currentNode = successor;
         }
     }
 
