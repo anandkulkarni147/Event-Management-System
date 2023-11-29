@@ -3,14 +3,13 @@ package chord;
 
 import event.Event;
 
-import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChordNode {
     private final Long nodeId;
     private ChordNode successor;
     private ChordNode predecessor;
-    private final List<Long> keys = new ArrayList<>();
-    private final Map<String, Event> events = new HashMap<>();
+    private final ConcurrentHashMap<String, Event> events = new ConcurrentHashMap<>();
 
     public ChordNode(Long nodeId) {
         this.nodeId = nodeId;
@@ -71,9 +70,8 @@ public class ChordNode {
         events.put(event.getId(), event);
         System.out.println("\nNew event (ID-"+event.getId()+")\nStored at Node ID - "+this.getNodeId());
         System.out.println("\n----------------------------List of events at current node - ["+this.getNodeId()+"]----------------------------");
-        Map<String, Event> eventsLocal = this.getEvents();
-        for(String eventId : eventsLocal.keySet()){
-            System.out.println("*"+eventsLocal.get(eventId).getName());
+        for(String eventId : events.keySet()){
+            System.out.println("*"+events.get(eventId).getName());
         }
         System.out.println("");
     }
@@ -107,7 +105,7 @@ public class ChordNode {
      *
      * @return events
      */
-    public Map<String, Event> getEvents() {
+    public ConcurrentHashMap<String, Event> getEvents() {
         return this.events;
     }
 }

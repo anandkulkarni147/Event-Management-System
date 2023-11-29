@@ -6,6 +6,7 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpSession;
 
+import email.ScheduleEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,9 @@ public class EventController {
 
     @Autowired
     private ChordController chordController;
+
+    @Autowired
+    private ScheduleEmailService emailScheduler;
 
     List<Event> eventList = new ArrayList<>();
 
@@ -88,7 +92,10 @@ public class EventController {
         String email = (String) session.getAttribute("email");
         System.out.println(email+" subscribed to event - "+eventName);
         Event event = chordController.fetchEventObject(eventId);
-        event.addSubscriber(email);        
+        event.addSubscriber(email);
+
+        emailScheduler.sendSubscribedEmail(event, email);
+
         session.setAttribute("subscriptionMessage", "You are now subscribed to a new event - "+eventName);
         return "redirect:/home";
     }
