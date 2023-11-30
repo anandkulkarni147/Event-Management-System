@@ -6,6 +6,7 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpSession;
 
+import email.KafkaProducerService;
 import email.ScheduleEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ public class EventController {
     private ChordController chordController;
 
     @Autowired
-    private ScheduleEmailService emailScheduler;
+    private KafkaProducerService emailScheduler;
 
     List<Event> eventList = new ArrayList<>();
 
@@ -90,11 +91,10 @@ public class EventController {
     @PostMapping("/subscribe")
     public String subscribeToEvent(@RequestParam("eventName") String eventName, @RequestParam("eventId") String eventId, HttpSession session, Model model) {
         String email = (String) session.getAttribute("email");
-        System.out.println(email+" subscribed to event - "+eventName);
         Event event = chordController.fetchEventObject(eventId);
         event.addSubscriber(email);
 
-        emailScheduler.sendSubscribedEmail(event);
+        emailScheduler.sendSubscribedEvent(event);
 
         session.setAttribute("subscriptionMessage", "You are now subscribed to a new event - "+eventName);
         return "redirect:/home";

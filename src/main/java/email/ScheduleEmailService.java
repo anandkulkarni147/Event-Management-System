@@ -2,30 +2,27 @@ package email;
 
 import event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 @Component
 public class ScheduleEmailService {
 
     @Autowired
-    private KafkaProducerService kafkaProducerService;
+    private KafkaConsumerService kafkaConsumerService;
 
     // Schedule the subscribed email sending task at every 60 seconds
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 20000)
     public void sendSubscribedEmail(Event event) {
-        // Send the event to Kafka
-        kafkaProducerService.sendSubscribedEvent(event);
+        System.out.println("consumer called");
+        kafkaConsumerService.processEvent(event);
     }
 
     // Schedule the email sending task at 8 AM on the event date and one day before
     @Scheduled(cron = "0 0 6 * * ?")
-    public void sendScheduledEmail(Event event, String email) {
+    public void sendScheduledEmail(Event event) {
         // Check events for today and send notification emails
-        kafkaProducerService.sendEventAlert(event, email);
+        kafkaConsumerService.processEvent(event);
     }
 
 
