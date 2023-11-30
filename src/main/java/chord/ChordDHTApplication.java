@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"chord", "event", "email"})
+@ComponentScan(basePackages = {"chord", "event", "email", "kafka"})
 public class ChordDHTApplication {
 
     public static void main(String[] args) {

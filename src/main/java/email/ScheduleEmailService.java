@@ -16,9 +16,9 @@ public class ScheduleEmailService {
 
     // Schedule the subscribed email sending task at every 60 seconds
     @Scheduled(fixedRate = 60000)
-    public void sendSubscribedEmail(Event event, String email) {
+    public void sendSubscribedEmail(Event event) {
         // Send the event to Kafka
-        kafkaProducerService.sendSubscribedEvent(event, email);
+        kafkaProducerService.sendSubscribedEvent(event);
     }
 
     // Schedule the email sending task at 8 AM on the event date and one day before

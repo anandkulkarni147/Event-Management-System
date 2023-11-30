@@ -94,7 +94,7 @@ public class EventController {
         Event event = chordController.fetchEventObject(eventId);
         event.addSubscriber(email);
 
-        emailScheduler.sendSubscribedEmail(event, email);
+        emailScheduler.sendSubscribedEmail(event);
 
         session.setAttribute("subscriptionMessage", "You are now subscribed to a new event - "+eventName);
         return "redirect:/home";

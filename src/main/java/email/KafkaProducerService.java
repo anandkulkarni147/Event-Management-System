@@ -3,9 +3,9 @@ package email;
 import event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class KafkaProducerService {
 
     private static final String EVENT_ALERT_TOPIC = "event-alert";
@@ -17,7 +17,7 @@ public class KafkaProducerService {
     public void sendEventAlert(Event event, String email) {
         kafkaTemplate.send(EVENT_ALERT_TOPIC, event);
     }
-    public void sendSubscribedEvent(Event event, String email) {
+    public void sendSubscribedEvent(Event event) {
         kafkaTemplate.send(SUBSCRIBED_NOTIFICATION_TOPIC, event);
     }
 }

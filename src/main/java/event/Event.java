@@ -1,9 +1,6 @@
 package event;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Event {
     private String name;
@@ -11,7 +8,7 @@ public class Event {
     private String id;
     private String description;
     private String location;
-    private Set<String> subscribers;
+    private List<String> subscribers;
 
     public Event() {
         this.name = "";
@@ -19,7 +16,7 @@ public class Event {
         this.id = generateEventId();
         this.description = "";
         this.location = "";
-        this.subscribers = new HashSet<>();
+        this.subscribers = new ArrayList<>();
     }
 
     public Event(String name, Date date, String description, String location) {
@@ -28,7 +25,7 @@ public class Event {
         this.id = generateEventId();
         this.description = description;
         this.location = location;
-        this.subscribers = new HashSet<>();
+        this.subscribers = new ArrayList<>();
     }
 
     /**
@@ -97,7 +94,7 @@ public class Event {
      *
      * @return subscribers
      */
-    public Set<String> getSubscribers() {
+    public List<String> getSubscribers() {
         return this.subscribers;
     }
 
