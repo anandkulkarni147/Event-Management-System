@@ -12,7 +12,7 @@ public class ScheduleEmailService {
     private KafkaConsumerService kafkaConsumerService;
 
     // Schedule the subscribed email sending task at every 60 seconds
-    @Scheduled(fixedRate = 20000)
+    @Scheduled(fixedRate = 30000)
     public void sendSubscribedEmail(Event event) {
         System.out.println("consumer called");
         kafkaConsumerService.processEvent(event);
