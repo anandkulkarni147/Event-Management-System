@@ -1,8 +1,7 @@
 package event;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpSession;
 
@@ -27,14 +26,35 @@ public class EventController {
     @Autowired
     private KafkaProducerService emailScheduler;
 
-    List<Event> eventList = new ArrayList<>();
+    List<Event> eventList;
 
     public List<Event> getAllEvents() {
+        Set<String> set = new HashSet<>();
+        eventList = new ArrayList<>();
+        for (Map.Entry<Long, ChordNode> entry : chordController.getRing().entrySet()) {
+            ConcurrentHashMap<String, Event> chm = entry.getValue().getEvents();
+            for (String key : chm.keySet()) {
+                if (!set.contains(key)) {
+                    set.add(key);
+                    eventList.add(chm.get(key));
+                }
+            }
+        }
         return eventList;
     }
 
+    public void printAllEvents() {
+        for (Map.Entry<Long, ChordNode> entry : chordController.getRing().entrySet()) {
+            ConcurrentHashMap<String, Event> chm = entry.getValue().getEvents();
+            System.out.println("\n----------------------------List of events at current node - ["+entry.getValue().getNodeId()+"]----------------------------");
+            for (String key : chm.keySet()) {
+                System.out.println(chm.get(key).getName());
+            }
+        }
+    }
+
     public void addEvent(Event event) {
-        eventList.add(event);
+//        eventList.add(event);
         chordController.storeEventAtNode(event);
     }
 
@@ -109,6 +129,7 @@ public class EventController {
         Long id =  Long.parseLong(nodeId);
         chordController.removeNode(id);
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!! "+id+" has been deleted !!!!!!!!!!!!!!!!!!!!!!!!!");
+        printAllEvents();
         return "redirect:/deleteNode";
     }
 

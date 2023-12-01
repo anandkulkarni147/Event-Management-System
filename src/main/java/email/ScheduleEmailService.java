@@ -18,7 +18,7 @@ public class ScheduleEmailService {
         kafkaConsumerService.processEvent(event);
     }
 
-    // Schedule the email sending task at 8 AM on the event date and one day before
+    // Schedule the email sending task at 6 AM on the event date and one day before
     @Scheduled(cron = "0 0 6 * * ?")
     public void sendScheduledEmail(Event event) {
         // Check events for today and send notification emails

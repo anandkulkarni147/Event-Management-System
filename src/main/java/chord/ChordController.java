@@ -80,12 +80,19 @@ public class ChordController {
             if (node.getNumberOfEventsInCurrentNode() > MAX_EVENTS_IN_SINGLE_NODE) {
                 addNewNode(node);
             }
+            ChordNode currentNode = node;
+            for(int i=0; i<1; i++){
+                ChordNode successor = currentNode.getSuccessor();
+                successor.storeEvent(event);
+                currentNode = successor;
+            }
         } finally {
             lock.unlock();
         }
     }
 
     private void addNewNode(ChordNode node) {
+        lock.lock();
         try {
             ChordNode predecessor = node.getPredecessor();
             Long newNodeId = eventualConsistentHash(node.getNodeId(), predecessor.getNodeId());
