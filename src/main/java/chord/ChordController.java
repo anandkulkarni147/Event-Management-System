@@ -91,7 +91,7 @@ public class ChordController {
         }
     }
 
-    private void addNewNode(ChordNode node) {
+    public void addNewNode(ChordNode node) {
         lock.lock();
         try {
             ChordNode predecessor = node.getPredecessor();

@@ -26,11 +26,9 @@ public class EventController {
     @Autowired
     private KafkaProducerService emailScheduler;
 
-    List<Event> eventList;
-
     public List<Event> getAllEvents() {
         Set<String> set = new HashSet<>();
-        eventList = new ArrayList<>();
+        List<Event> eventList = new ArrayList<>();
         for (Map.Entry<Long, ChordNode> entry : chordController.getRing().entrySet()) {
             ConcurrentHashMap<String, Event> chm = entry.getValue().getEvents();
             for (String key : chm.keySet()) {
@@ -48,7 +46,7 @@ public class EventController {
             ConcurrentHashMap<String, Event> chm = entry.getValue().getEvents();
             System.out.println("\n----------------------------List of events at current node - ["+entry.getValue().getNodeId()+"]----------------------------");
             for (String key : chm.keySet()) {
-                System.out.println(chm.get(key).getName());
+                System.out.println("*"+chm.get(key).getName());
             }
         }
     }
