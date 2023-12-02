@@ -52,7 +52,6 @@ public class EventController {
     }
 
     public void addEvent(Event event) {
-//        eventList.add(event);
         chordController.storeEventAtNode(event);
     }
 

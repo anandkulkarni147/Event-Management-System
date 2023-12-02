@@ -20,7 +20,7 @@ public class ChordController {
 
     private static int MAX_EVENTS_IN_SINGLE_NODE = 2;
 
-    private Lock lock;
+    private Lock lock = new ReentrantLock();
 
     /**
      * get field
@@ -51,7 +51,6 @@ public class ChordController {
         first.setPredecessor(second);
         second.setPredecessor(first);
         second.setSuccessor(first);
-        lock = new ReentrantLock();
     }
 
     public void removeNode(Long nodeId) {
@@ -81,7 +80,7 @@ public class ChordController {
                 addNewNode(node);
             }
             ChordNode currentNode = node;
-            for(int i=0; i<1; i++){
+            for(int i=0; i<2; i++){
                 ChordNode successor = currentNode.getSuccessor();
                 successor.storeEvent(event);
                 currentNode = successor;

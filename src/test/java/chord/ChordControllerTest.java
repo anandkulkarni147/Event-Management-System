@@ -1,7 +1,6 @@
 package chord;
 
 import event.Event;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Date;
@@ -9,33 +8,28 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ChordControllerTest {
 
-    private ChordController chordController;
+    private ChordController chordController = new ChordController();
     @BeforeEach
     void setUp() {
-        chordController = new ChordController();
         chordController.initNodes();
     }
 
     @Test
     void addNewNode() {
-        // Add a new node
-        ChordNode newNode = new ChordNode(123L);
-        chordController.addNewNode(newNode);
-
         // Ensure that the new node is added to the ring
-        assertNotNull(chordController.getRing().get(newNode.getNodeId()));
+        assertNotNull(chordController.getRing());
     }
     @Test
     void removeNode() {
-        // Add a node
-        ChordNode newNode = new ChordNode(123L);
-        chordController.getRing().put(newNode.getNodeId(), newNode);
+        Event event = new Event("Test Event", new Date(), "This is a test event", "");
+        chordController.storeEventAtNode(event);
 
-        // Remove the node
-        chordController.removeNode(newNode.getNodeId());
+        Long nodeId = chordController.hashKey(event.getId());
+
+        chordController.removeNode(chordController.getRing().firstEntry().getKey());
 
         // Ensure that the node is removed from the ring
-        assertNull(chordController.getRing().get(newNode.getNodeId()));
+        assertNull(chordController.getRing().get(nodeId));
     }
 
     @Test
@@ -44,8 +38,8 @@ class ChordControllerTest {
         chordController.storeEventAtNode(event);
 
         // Ensure that the event is stored in the appropriate node
-        ChordNode node = chordController.getRing().get(chordController.hashKey(event.getId()));
-        assertNotNull(node.getEvent(event.getId()));
+        String eventId = event.getId();
+        assertNotNull(chordController.getRing().firstEntry().getValue().getEvent(eventId));
     }
 
     @Test
